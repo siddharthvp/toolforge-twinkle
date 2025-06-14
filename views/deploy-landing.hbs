@@ -1,0 +1,53 @@
+<h2>Deploy Twinkle</h2>
+
+<ul>
+    <li>
+        Please review the <a href="https://github.com/wikimedia-gadgets/twinkle/commits/master/" target="_blank">commits in master branch</a> before deploying!
+    </li>
+    <li>
+        It is recommended to deploy to Test Wikipedia first before proceeding to English Wikipedia.
+    </li>
+    <li>
+        For security, this tool does not store OAuth tokens. You'll be prompted to re-authorize the application via metawiki for each usage.
+    </li>
+</ul>
+
+<br>
+<a class="deploy" href="{{restApiUrl}}/oauth2/authorize?response_type=code&client_id={{clientId}}&state=testwiki&redirect_uri={{redirectUri}}">
+    <button>Deploy to Test Wikipedia</button>
+</a>
+<a class="deploy" href="{{restApiUrl}}/oauth2/authorize?response_type=code&client_id={{clientId}}&state=enwiki&redirect_uri={{redirectUri}}">
+    <button>Deploy to English Wikipedia</button>
+</a>
+
+<style>
+    a.deploy {
+        text-decoration: none;
+    }
+    .deploy button {
+        display: block;
+        box-sizing: border-box;
+        margin: 10px 0;
+        border-width: 1px;
+        border-style: solid;
+        border-radius: 2px;
+        vertical-align: middle;
+        font-weight: bold;
+        text-align: center;
+        padding: 5px 12px;
+        background-color: #36c;
+        color: #fff;
+        border-color: #36c;
+        transition-property: background-color,color,border-color,box-shadow;
+        transition-duration: 100ms;
+    }
+    .deploy button:hover {
+        cursor: pointer;
+        background-color: #3056a9;
+        border-color: #3056a9;
+    }
+    .deploy button:active {
+        background-color: #233566;
+        border-color: #233566;
+    }
+</style>

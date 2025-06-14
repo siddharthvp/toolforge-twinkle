@@ -1,0 +1,43 @@
+<h2>Deploy Twinkle</h2>
+<pre id="updates"></pre>
+<img src="/images/loading.gif" height="40" width="40" id="loading-sign" alt="loading">
+
+<script>
+    let source = new EventSource('/deploy/stream?code={{code}}&state={{state}}');
+    let updatesPre = document.getElementById('updates')
+
+    source.onopen = function () {
+        console.log('Connected to stream');
+    }
+    source.onmessage = function (msg) {
+        let text = atob(msg.data);
+        if (text === 'end:success') {
+            updateStatus('<span style="font-weight: bold; color: green">Twinkle deployment completed successfully :)</span>');
+            finish();
+        } else if (text === 'end:failure') {
+			updateStatus(error('Deployment unsuccessful :(') +
+                    `<br> Please see the error message above.`);
+			finish();
+        } else {
+            updatesPre.textContent += text + '\n';
+        }
+    }
+    source.onerror = function (err) {
+        finish();
+		updateStatus(error('Something bad happened :(') +
+                `<br> Please check the wiki to see if deployment was successful or try again.`);
+        console.error(err);
+    }
+	function updateStatus(html) {
+        const div = document.createElement('div');
+		div.innerHTML = html;
+        updatesPre.insertAdjacentElement('afterend', div);
+    }
+    function error(msg) {
+        return `<span style="color: red; font-weight: bold">${msg}</span>`;
+    }
+    function finish() {
+        document.getElementById('loading-sign').remove();
+        source.close();
+    }
+</script>
