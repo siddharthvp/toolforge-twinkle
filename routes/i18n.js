@@ -5,7 +5,7 @@ const fs = require('fs');
 const memory = {};
 const CACHE_HEADER = 'public, max-age=86400, s-maxage=86400';
 
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
 	const {language} = req.query;
 
 	if (memory[language]) {
