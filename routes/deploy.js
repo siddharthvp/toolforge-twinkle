@@ -3,6 +3,7 @@ const { spawn } = require("node:child_process");
 const express = require('express');
 require('express-async-errors');
 const fs = require("fs-extra");
+const Ansi = require('ansi-to-html');
 const conf = require('../.conf');
 
 const router = express.Router();
@@ -35,8 +36,11 @@ router.get('/stream', async (req, res) => {
 		console.log(`[W] Client closed the connection`); // Use morgan
 		res.end();
 	});
+
+	const ansi = new Ansi();
+
 	function output(content) {
-		res.write(`data: ${btoa(content.toString())}\n\n`);
+		res.write(`data: ${btoa(ansi.toHtml(content.toString()))}\n\n`);
 	}
 	function outputSuccess() {
 		output('end:success');
@@ -67,6 +71,7 @@ router.get('/stream', async (req, res) => {
 			}).toString(),
 		});
 		if (!tokenResponse.ok) {
+			console.log('Error in access_token fetch: ', await tokenResponse.json());
 			return outputFailure(`ERROR: Failed to fetch access token. Status: ${tokenResponse.status}: ${tokenResponse.statusText}`);
 		}
 	} catch (err) {
@@ -88,7 +93,13 @@ router.get('/stream', async (req, res) => {
 
 	async function runCommand(cmd, args, label, cwd) {
 		return new Promise((resolve, reject) => {
-			const proc = spawn(cmd, args, { cwd });
+			const proc = spawn(cmd, args, {
+				cwd,
+				env: {
+					...process.env,
+					FORCE_COLOR: true
+				}
+			});
 			output(`${'='.repeat(80)}\n$ ${cmd} ${args.join(' ')}\n`);
 			proc.stdout.on('data', data => output(data));
 			proc.stderr.on('data', data => output(data));

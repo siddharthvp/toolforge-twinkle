@@ -1,6 +1,13 @@
 <h2>Deploy Twinkle</h2>
-<pre id="updates"></pre>
+<div id="updates"></div>
 <img src="/images/loading.gif" height="40" width="40" id="loading-sign" alt="loading">
+
+<style>
+    #updates {
+        font-family: monospace;
+        margin-bottom: 10px;
+    }
+</style>
 
 <script>
     let source = new EventSource('/deploy/stream?code={{code}}&state={{state}}');
@@ -19,7 +26,9 @@
                     `<br> Please see the error message above.`);
 			finish();
         } else {
-            updatesPre.textContent += text + '\n';
+			text = text.replace(/\n/g, '<br>');
+			// This becomes an XSS vector only if the deploy script prints malicious JS
+            updatesPre.innerHTML += text + '<br>';
         }
     }
     source.onerror = function (err) {
