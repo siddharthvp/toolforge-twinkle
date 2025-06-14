@@ -4,6 +4,7 @@ const express = require('express');
 require('express-async-errors');
 const fs = require("fs-extra");
 const Ansi = require('ansi-to-html');
+const {logger} = require('../logger');
 const conf = require('../.conf');
 
 const router = express.Router();
@@ -33,7 +34,7 @@ router.get('/stream', async (req, res) => {
 	});
 
 	res.on('close', () => {
-		console.log(`[W] Client closed the connection`); // Use morgan
+		logger.info(`Client closed the connection`);
 		res.end();
 	});
 
@@ -71,7 +72,7 @@ router.get('/stream', async (req, res) => {
 			}).toString(),
 		});
 		if (!tokenResponse.ok) {
-			console.log('Error in access_token fetch: ', await tokenResponse.json());
+			logger.error('Error in access_token fetch: ', await tokenResponse.json());
 			return outputFailure(`ERROR: Failed to fetch access token. Status: ${tokenResponse.status}: ${tokenResponse.statusText}`);
 		}
 	} catch (err) {
