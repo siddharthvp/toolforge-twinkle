@@ -5,7 +5,7 @@ require('express-async-errors');
 const fs = require("fs-extra");
 const ansiHtml = require('ansi-html');
 const {logger} = require('../logger');
-const conf = require('../.conf');
+const conf = require('../conf');
 
 const router = express.Router();
 
