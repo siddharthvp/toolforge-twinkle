@@ -1,7 +1,8 @@
 {
-	"name": "twinkle-web",
+	"name": "toolforge-twinkle",
 	"version": "0.0.0",
 	"license": "MIT",
+	"author": "Siddharth VP",
 	"scripts": {
 		"start": "node server.js",
 		"test": "nodemon server.js",
