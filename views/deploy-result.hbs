@@ -28,7 +28,7 @@
         } else {
 			text = text.replace(/\n/g, '<br>');
 			// This becomes an XSS vector only if the deploy script prints malicious JS
-            updatesPre.innerHTML += text + '<br>';
+            updatesPre.innerHTML += text;
         }
     }
     source.onerror = function (err) {

@@ -3,7 +3,7 @@ const { spawn } = require("node:child_process");
 const express = require('express');
 require('express-async-errors');
 const fs = require("fs-extra");
-const Ansi = require('ansi-to-html');
+const ansiHtml = require('ansi-html');
 const {logger} = require('../logger');
 const conf = require('../.conf');
 
@@ -38,10 +38,8 @@ router.get('/stream', async (req, res) => {
 		res.end();
 	});
 
-	const ansi = new Ansi();
-
 	function output(content) {
-		res.write(`data: ${btoa(ansi.toHtml(content.toString()))}\n\n`);
+		res.write(`data: ${btoa(ansiHtml(content.toString()))}\n\n`);
 	}
 	function outputSuccess() {
 		output('end:success');
@@ -92,16 +90,12 @@ router.get('/stream', async (req, res) => {
 		return outputFailure(`ERROR: Failed to write credentials.json: ${e.message}`);
 	}
 
+	const env = { ...process.env, FORCE_COLOR: true };
+
 	async function runCommand(cmd, args, label, cwd) {
 		return new Promise((resolve, reject) => {
-			const proc = spawn(cmd, args, {
-				cwd,
-				env: {
-					...process.env,
-					FORCE_COLOR: true
-				}
-			});
-			output(`${'='.repeat(80)}\n$ ${cmd} ${args.join(' ')}\n`);
+			const proc = spawn(cmd, args, { cwd, env });
+			output(`\n${'='.repeat(80)}\n$ ${cmd} ${args.join(' ')}\n`);
 			proc.stdout.on('data', data => output(data));
 			proc.stderr.on('data', data => output(data));
 			proc.on('close', code => {
