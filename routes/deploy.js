@@ -1,8 +1,8 @@
-const path = require("node:path");
-const { spawn } = require("node:child_process");
+const path = require('path');
+const { spawn } = require("child_process");
 const express = require('express');
 require('express-async-errors');
-const fs = require("fs-extra");
+const fs = require('fs-extra');
 const ansiHtml = require('ansi-html');
 const {logger} = require('../logger');
 const conf = require('../conf');
