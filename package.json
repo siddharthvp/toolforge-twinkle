@@ -4,8 +4,9 @@
 	"license": "MIT",
 	"author": "Siddharth VP",
 	"scripts": {
-		"start": "node server.js",
-		"test": "nodemon server.js",
+		"start": "~/.nvm/versions/node/v22.16.0/bin/node server.js",
+		"test": "node server.js",
+		"test:nodemon": "nodemon server.js",
 		"restart": "webservice --backend kubernetes node18 restart",
 		"logs": "kubectl logs -f deploy/twinkle"
 	},
