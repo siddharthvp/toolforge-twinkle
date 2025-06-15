@@ -121,11 +121,11 @@ router.get('/stream', async (req, res) => {
 
 	try {
 		if (!process.env.ALLOW_NON_MASTER_DEPLOY) {
-			await runCommand('git', ['checkout', 'master'], 'git checkout master', repoPath);
+			await runCommand('git', ['checkout', 'master'], 'git checkout', repoPath);
 		}
-		await runCommand('git', ['pull'], 'git pull', repoPath);
+		await runCommand('git', ['pull', '--ff-only', 'origin', 'master'], 'git pull', repoPath);
 		await runCommand('npm', ['install'], 'npm install', repoPath);
-		await runCommand('npm', ['run', 'deploy:cd'], 'npm run deploy:cd', repoPath);
+		await runCommand('npm', ['run', 'deploy:cd'], 'deploy script', repoPath);
 		outputSuccess();
 	} catch (e) {
 		outputFailure(`Aborted: ${e.message}`);
