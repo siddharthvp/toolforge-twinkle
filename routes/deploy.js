@@ -77,7 +77,10 @@ router.get('/stream', async (req, res) => {
 			return;
 		}
 	} catch (err) {
-		return outputFailure(`ERROR: Network error while fetching access token: ${err.message}`);
+		outputFailure(`ERROR: Network error while fetching access token: ${err.message}`);
+		logger.error('Network error while fetching access token');
+		logger.error(err.stack);
+		return;
 	}
 	const tokenData = await tokenResponse.json();
 	if (!tokenData.access_token) {
@@ -103,14 +106,14 @@ router.get('/stream', async (req, res) => {
 			proc.stderr.on('data', data => output(data));
 			proc.on('close', code => {
 				if (code !== 0) {
-					output(`ERROR: ${label} failed with exit code ${code}`);
+					output(`ERROR: ${label} failed with exit code ${code}\n`);
 					reject(new Error(`${label} failed`));
 				} else {
 					resolve();
 				}
 			});
 			proc.on('error', err => {
-				output(`ERROR: ${label} process error: ${err.message}`);
+				output(`ERROR: ${label} process error: ${err.message}\n`);
 				reject(err);
 			});
 		});
