@@ -39,6 +39,8 @@ router.get('/stream', async (req, res) => {
 	});
 
 	function output(content) {
+		// Use ansiHtml to convert ANSI escape codes used for terminal coloring to HTML styles.
+		// Note: ansiHtml does not support all chalk colors or options.
 		res.write(`data: ${btoa(ansiHtml(content.toString()))}\n\n`);
 	}
 	function outputSuccess() {
@@ -53,7 +55,7 @@ router.get('/stream', async (req, res) => {
 
 	const repoPath = path.resolve(__dirname, '../repos/twinkle');
 	if (!await fs.exists(repoPath)) {
-		return outputFailure('ERROR: Could not find repo. Please check if ~/repos/twinkle exists.');
+		return outputFailure('ERROR: Could not find repo. Please check if ~/www/js/repos/twinkle exists.');
 	}
 
 	let tokenResponse;
@@ -70,8 +72,9 @@ router.get('/stream', async (req, res) => {
 			}).toString(),
 		});
 		if (!tokenResponse.ok) {
+			outputFailure(`ERROR: Failed to fetch access token. Status: ${tokenResponse.status}: ${tokenResponse.statusText}`);
 			logger.error('Error in access_token fetch: ', await tokenResponse.json());
-			return outputFailure(`ERROR: Failed to fetch access token. Status: ${tokenResponse.status}: ${tokenResponse.statusText}`);
+			return;
 		}
 	} catch (err) {
 		return outputFailure(`ERROR: Network error while fetching access token: ${err.message}`);
@@ -114,7 +117,9 @@ router.get('/stream', async (req, res) => {
 	}
 
 	try {
-		// await runCommand('git', ['checkout', 'master'], 'git checkout master', repoPath);
+		if (!process.env.ALLOW_NON_MASTER_DEPLOY) {
+			await runCommand('git', ['checkout', 'master'], 'git checkout master', repoPath);
+		}
 		await runCommand('git', ['pull'], 'git pull', repoPath);
 		await runCommand('npm', ['install'], 'npm install', repoPath);
 		await runCommand('npm', ['run', 'deploy:cd'], 'npm run deploy:cd', repoPath);
