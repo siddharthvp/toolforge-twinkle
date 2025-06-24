@@ -12,3 +12,5 @@ const router = express.Router();
 router.get('/', async (req, res) => {
 	res.redirect(308, 'https://gadget-deploy.toolforge.org/');
 });
+
+export default router;
